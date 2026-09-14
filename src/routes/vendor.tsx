@@ -32,23 +32,14 @@ import {
   CheckCircle2,
   Truck,
   ShieldCheck,
-  Settings,
   Filter,
-  Eye,
   MoreHorizontal,
-  Copy,
-  ExternalLink,
-  CalendarDays,
-  Reply,
-  Tag,
 } from "lucide-react";
 
 /**
  * Professional Vendor Dashboard + Storefront
  * Gift Marketplace / AliExpress-inspired
  * WhatsApp Business-style vendor profile features
- *
- * Frontend demonstration component.
  */
 
 const palette = {
@@ -259,7 +250,42 @@ type VendorProfile = {
   website: string;
 };
 
-const initialConversations = [
+type MessageSender = "buyer" | "vendor";
+
+type VendorMessage = {
+  from: MessageSender;
+  text: string;
+  time: string;
+};
+
+type Conversation = {
+  id: number;
+  name: string;
+  initial: string;
+  unread: number;
+  status: string;
+  messages: VendorMessage[];
+};
+
+type ProductFormData = {
+  name: string;
+  price: string | number;
+  stock: string | number;
+  category: string;
+  description: string;
+  icon: string;
+  image: string | null;
+  mrp?: number;
+  rating?: number;
+  reviews?: number;
+  emoji?: string;
+  tags?: string[];
+  status?: string;
+};
+
+type ProductUpdateData = ProductFormData;
+
+const initialConversations: Conversation[] = [
   {
     id: 1,
     name: "Amara J.",
@@ -269,14 +295,12 @@ const initialConversations = [
     messages: [
       {
         from: "buyer",
-        text:
-          "Hi, can the keepsake box be engraved with two names?",
+        text: "Hi, can the keepsake box be engraved with two names?",
         time: "10:02 AM",
       },
       {
         from: "buyer",
-        text:
-          "Also, does it ship in a gift box already?",
+        text: "Also, does it ship in a gift box already?",
         time: "10:03 AM",
       },
     ],
@@ -290,14 +314,12 @@ const initialConversations = [
     messages: [
       {
         from: "buyer",
-        text:
-          "Order #4021 arrived today, it's lovely, thank you!",
+        text: "Order #4021 arrived today, it's lovely, thank you!",
         time: "Yesterday",
       },
       {
         from: "vendor",
-        text:
-          "So glad it arrived safely! Thank you for the order.",
+        text: "So glad it arrived safely! Thank you for the order.",
         time: "Yesterday",
       },
     ],
@@ -311,8 +333,7 @@ const initialConversations = [
     messages: [
       {
         from: "buyer",
-        text:
-          "Do you have the wrapping paper in a plain kraft option?",
+        text: "Do you have the wrapping paper in a plain kraft option?",
         time: "Mon",
       },
     ],
@@ -440,14 +461,8 @@ function StatChip({
   );
 }
 
-function ProductCard({
-  product,
-  onAddToCart,
-}: {
-  product: any;
-  onAddToCart?: () => void;
-}) {
-  const Icon = ICONS[product.icon] || Gift;
+function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart?: () => void }) {
+  const Icon = ICONS[product.icon ?? "Gift"] || Gift;
 
   return (
     <div
@@ -481,11 +496,7 @@ function ProductCard({
             }}
           />
         ) : (
-          <Icon
-            size={40}
-            color={palette.rose}
-            strokeWidth={1.5}
-          />
+          <Icon size={40} color={palette.rose} strokeWidth={1.5} />
         )}
 
         {product.stock < 10 && (
@@ -585,13 +596,7 @@ function ProductCard({
   );
 }
 
-function BusinessInfoCard({
-  vendor,
-  onEdit,
-}: {
-  vendor: any;
-  onEdit: () => void;
-}) {
+function BusinessInfoCard({ vendor, onEdit }: { vendor: VendorProfile; onEdit: () => void }) {
   const info = [
     {
       icon: MapPin,
@@ -705,10 +710,7 @@ function BusinessInfoCard({
                   flexShrink: 0,
                 }}
               >
-                <Icon
-                  size={15}
-                  color={palette.roseDark}
-                />
+                <Icon size={15} color={palette.roseDark} />
               </div>
 
               <div style={{ minWidth: 0 }}>
@@ -762,13 +764,12 @@ function MessagesSummaryCard({
   conversations,
   onOpen,
 }: {
-  conversations: any[];
+  conversations: Conversation[];
   onOpen: () => void;
 }) {
-  const unreadTotal = conversations.reduce(
-    (sum, c) => sum + c.unread,
-    0
-  );
+  const unreadTotal = conversations.reduce((sum, conversation) => {
+    return sum + conversation.unread;
+  }, 0);
 
   const preview = conversations.slice(0, 3);
 
@@ -801,10 +802,7 @@ function MessagesSummaryCard({
             justifyContent: "center",
           }}
         >
-          <MessageCircle
-            size={20}
-            color="#fff"
-          />
+          <MessageCircle size={20} color="#fff" />
         </div>
 
         <div>
@@ -903,11 +901,7 @@ function MessagesSummaryCard({
                   marginTop: 2,
                 }}
               >
-                {
-                  conversation.messages[
-                    conversation.messages.length - 1
-                  ]?.text
-                }
+                {conversation.messages[conversation.messages.length - 1]?.text}
               </div>
             </div>
 
@@ -963,14 +957,10 @@ function MessagesPanel({
   conversations,
   setConversations,
 }: {
-  conversations: any[];
-  setConversations: React.Dispatch<
-    React.SetStateAction<any[]>
-  >;
+  conversations: Conversation[];
+  setConversations: React.Dispatch<React.SetStateAction<Conversation[]>>;
 }) {
-  const [activeId, setActiveId] = useState(
-    conversations[0]?.id ?? null
-  );
+  const [activeId, setActiveId] = useState<number | null>(conversations[0]?.id ?? null);
 
   const [draft, setDraft] = useState("");
 
@@ -981,9 +971,7 @@ function MessagesPanel({
     "Thank you for your order and support!",
   ];
 
-  const active = conversations.find(
-    (conversation) => conversation.id === activeId
-  );
+  const active = conversations.find((conversation) => conversation.id === activeId);
 
   function openConversation(id: number) {
     setActiveId(id);
@@ -995,8 +983,8 @@ function MessagesPanel({
               ...conversation,
               unread: 0,
             }
-          : conversation
-      )
+          : conversation,
+      ),
     );
   }
 
@@ -1017,8 +1005,8 @@ function MessagesPanel({
                 },
               ],
             }
-          : conversation
-      )
+          : conversation,
+      ),
     );
 
     setDraft("");
@@ -1059,9 +1047,7 @@ function MessagesPanel({
           <button
             key={conversation.id}
             type="button"
-            onClick={() =>
-              openConversation(conversation.id)
-            }
+            onClick={() => openConversation(conversation.id)}
             className="vp-conv vp-focus"
             style={{
               width: "100%",
@@ -1071,10 +1057,7 @@ function MessagesPanel({
               padding: "13px 14px",
               border: "none",
               borderBottom: `1px solid ${palette.hairline}`,
-              background:
-                conversation.id === activeId
-                  ? palette.roseSoft
-                  : "transparent",
+              background: conversation.id === activeId ? palette.roseSoft : "transparent",
               cursor: "pointer",
               textAlign: "left",
             }}
@@ -1138,11 +1121,7 @@ function MessagesPanel({
                   marginTop: 2,
                 }}
               >
-                {
-                  conversation.messages[
-                    conversation.messages.length - 1
-                  ]?.text
-                }
+                {conversation.messages[conversation.messages.length - 1]?.text}
               </div>
             </div>
 
@@ -1191,10 +1170,7 @@ function MessagesPanel({
                 <div
                   style={{
                     fontSize: 11,
-                    color:
-                      active.status === "Online"
-                        ? palette.success
-                        : palette.inkSoft,
+                    color: active.status === "Online" ? palette.success : palette.inkSoft,
                     marginTop: 2,
                   }}
                 >
@@ -1202,10 +1178,7 @@ function MessagesPanel({
                 </div>
               </div>
 
-              <MoreHorizontal
-                size={20}
-                color={palette.inkSoft}
-              />
+              <MoreHorizontal size={20} color={palette.inkSoft} />
             </div>
 
             <div
@@ -1220,50 +1193,39 @@ function MessagesPanel({
                 background: "#FFFCFD",
               }}
             >
-              {active.messages.map(
-                (message: any, index: number) => (
+              {active.messages.map((message, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: "flex",
+                    justifyContent: message.from === "vendor" ? "flex-end" : "flex-start",
+                  }}
+                >
                   <div
-                    key={index}
                     style={{
-                      display: "flex",
-                      justifyContent:
-                        message.from === "vendor"
-                          ? "flex-end"
-                          : "flex-start",
+                      maxWidth: "75%",
+                      background: message.from === "vendor" ? palette.rose : palette.roseSoft,
+                      color: message.from === "vendor" ? "#fff" : palette.ink,
+                      fontSize: 13.5,
+                      padding: "10px 13px",
+                      borderRadius: 14,
+                      lineHeight: 1.45,
                     }}
                   >
+                    {message.text}
+
                     <div
                       style={{
-                        maxWidth: "75%",
-                        background:
-                          message.from === "vendor"
-                            ? palette.rose
-                            : palette.roseSoft,
-                        color:
-                          message.from === "vendor"
-                            ? "#fff"
-                            : palette.ink,
-                        fontSize: 13.5,
-                        padding: "10px 13px",
-                        borderRadius: 14,
-                        lineHeight: 1.45,
+                        fontSize: 10.5,
+                        opacity: 0.72,
+                        marginTop: 4,
                       }}
                     >
-                      {message.text}
-
-                      <div
-                        style={{
-                          fontSize: 10.5,
-                          opacity: 0.72,
-                          marginTop: 4,
-                        }}
-                      >
-                        {message.time}
-                      </div>
+                      {message.time}
                     </div>
                   </div>
-                )
-              )}
+                </div>
+              ))}
             </div>
 
             <div
@@ -1307,13 +1269,12 @@ function MessagesPanel({
               <input
                 className="vp-input"
                 value={draft}
-                onChange={(event) =>
-                  setDraft(event.target.value)
-                }
-                onKeyDown={(event) =>
-                  event.key === "Enter" &&
-                  sendMessage()
-                }
+                onChange={(event) => setDraft(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    sendMessage();
+                  }
+                }}
                 placeholder="Write a reply…"
                 style={{
                   flex: 1,
@@ -1340,10 +1301,7 @@ function MessagesPanel({
                   cursor: "pointer",
                 }}
               >
-                <Send
-                  size={17}
-                  color="#fff"
-                />
+                <Send size={17} color="#fff" />
               </button>
             </div>
           </>
@@ -1368,11 +1326,11 @@ function ProductForm({
   onCancel,
   onSave,
 }: {
-  initial?: any;
+  initial?: ProductFormData;
   onCancel: () => void;
-  onSave: (data: any) => void;
+  onSave: (data: ProductFormData) => void;
 }) {
-  const [form, setForm] = useState(
+  const [form, setForm] = useState<ProductFormData>(
     initial || {
       name: "",
       price: "",
@@ -1381,42 +1339,30 @@ function ProductForm({
       description: "",
       icon: "Gift",
       image: null,
-    }
+    },
   );
 
-  const [imageError, setImageError] =
-    useState("");
+  const [imageError, setImageError] = useState("");
 
-  function update(
-    field: string,
-    value: any
-  ) {
-    setForm((previous: any) => ({
+  function update<K extends keyof ProductFormData>(field: K, value: ProductFormData[K]) {
+    setForm((previous) => ({
       ...previous,
       [field]: value,
     }));
   }
 
-  function handleImageChange(
-    event: React.ChangeEvent<HTMLInputElement>
-  ) {
-    const file =
-      event.target.files &&
-      event.target.files[0];
+  function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
 
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      setImageError(
-        "Please choose an image file."
-      );
+      setImageError("Please choose an image file.");
       return;
     }
 
     if (file.size > 4 * 1024 * 1024) {
-      setImageError(
-        "Image is too large — please use one under 4MB."
-      );
+      setImageError("Image is too large — please use one under 4MB.");
       return;
     }
 
@@ -1424,29 +1370,26 @@ function ProductForm({
 
     const reader = new FileReader();
 
-    reader.onload = () =>
-      update("image", reader.result);
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        update("image", reader.result);
+      }
+    };
 
     reader.readAsDataURL(file);
   }
 
-  function handleSubmit(
-    event: React.FormEvent
-  ) {
+  function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
-    if (
-      !form.name.trim() ||
-      !form.price ||
-      !form.stock
-    ) {
+    if (!form.name.trim() || !form.price || !form.stock) {
       return;
     }
 
     onSave({
       ...form,
-      price: parseFloat(form.price),
-      stock: parseInt(form.stock, 10),
+      price: parseFloat(String(form.price)),
+      stock: parseInt(String(form.stock), 10),
     });
   }
 
@@ -1475,9 +1418,7 @@ function ProductForm({
             fontWeight: 700,
           }}
         >
-          {initial
-            ? "Edit gift item"
-            : "Add a new gift item"}
+          {initial ? "Edit gift item" : "Add a new gift item"}
         </div>
 
         <button
@@ -1490,10 +1431,7 @@ function ProductForm({
             cursor: "pointer",
           }}
         >
-          <X
-            size={18}
-            color={palette.inkSoft}
-          />
+          <X size={18} color={palette.inkSoft} />
         </button>
       </div>
 
@@ -1510,25 +1448,19 @@ function ProductForm({
             gridColumn: "1 / -1",
           }}
         >
-          <label style={labelStyle}>
-            Item name
-          </label>
+          <label style={labelStyle}>Item name</label>
 
           <input
             required
             className="vp-input"
             value={form.name}
-            onChange={(event) =>
-              update("name", event.target.value)
-            }
+            onChange={(event) => update("name", event.target.value)}
             style={inputStyle}
           />
         </div>
 
         <div>
-          <label style={labelStyle}>
-            Price (USD)
-          </label>
+          <label style={labelStyle}>Price (USD)</label>
 
           <input
             required
@@ -1537,17 +1469,13 @@ function ProductForm({
             min="0"
             className="vp-input"
             value={form.price}
-            onChange={(event) =>
-              update("price", event.target.value)
-            }
+            onChange={(event) => update("price", event.target.value)}
             style={inputStyle}
           />
         </div>
 
         <div>
-          <label style={labelStyle}>
-            Stock quantity
-          </label>
+          <label style={labelStyle}>Stock quantity</label>
 
           <input
             required
@@ -1555,52 +1483,36 @@ function ProductForm({
             min="0"
             className="vp-input"
             value={form.stock}
-            onChange={(event) =>
-              update("stock", event.target.value)
-            }
+            onChange={(event) => update("stock", event.target.value)}
             style={inputStyle}
           />
         </div>
 
         <div>
-          <label style={labelStyle}>
-            Category
-          </label>
+          <label style={labelStyle}>Category</label>
 
           <input
             className="vp-input"
             value={form.category}
-            onChange={(event) =>
-              update(
-                "category",
-                event.target.value
-              )
-            }
+            onChange={(event) => update("category", event.target.value)}
             style={inputStyle}
           />
         </div>
 
         <div>
-          <label style={labelStyle}>
-            Product icon
-          </label>
+          <label style={labelStyle}>Product icon</label>
 
           <select
             className="vp-input"
             value={form.icon}
-            onChange={(event) =>
-              update("icon", event.target.value)
-            }
+            onChange={(event) => update("icon", event.target.value)}
             style={{
               ...inputStyle,
               background: "#fff",
             }}
           >
             {ICON_NAMES.map((name) => (
-              <option
-                key={name}
-                value={name}
-              >
+              <option key={name} value={name}>
                 {name}
               </option>
             ))}
@@ -1612,9 +1524,7 @@ function ProductForm({
             gridColumn: "1 / -1",
           }}
         >
-          <label style={labelStyle}>
-            Product image
-          </label>
+          <label style={labelStyle}>Product image</label>
 
           <div
             style={{
@@ -1648,10 +1558,7 @@ function ProductForm({
                   }}
                 />
               ) : (
-                <ImagePlus
-                  size={24}
-                  color={palette.rose}
-                />
+                <ImagePlus size={24} color={palette.rose} />
               )}
             </div>
 
@@ -1679,9 +1586,7 @@ function ProductForm({
               >
                 <ImagePlus size={14} />
 
-                {form.image
-                  ? "Replace photo"
-                  : "Upload photo"}
+                {form.image ? "Replace photo" : "Upload photo"}
 
                 <input
                   type="file"
@@ -1696,9 +1601,7 @@ function ProductForm({
               {form.image && (
                 <button
                   type="button"
-                  onClick={() =>
-                    update("image", null)
-                  }
+                  onClick={() => update("image", null)}
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -1744,20 +1647,13 @@ function ProductForm({
             gridColumn: "1 / -1",
           }}
         >
-          <label style={labelStyle}>
-            Description
-          </label>
+          <label style={labelStyle}>Description</label>
 
           <textarea
             className="vp-input"
             rows={3}
             value={form.description}
-            onChange={(event) =>
-              update(
-                "description",
-                event.target.value
-              )
-            }
+            onChange={(event) => update("description", event.target.value)}
             style={{
               ...inputStyle,
               resize: "vertical",
@@ -1774,22 +1670,12 @@ function ProductForm({
           marginTop: 16,
         }}
       >
-        <button
-          type="button"
-          onClick={onCancel}
-          style={secondaryButtonStyle}
-        >
+        <button type="button" onClick={onCancel} style={secondaryButtonStyle}>
           Cancel
         </button>
 
-        <button
-          type="submit"
-          className="vp-primary-btn vp-focus"
-          style={primaryButtonStyle}
-        >
-          {initial
-            ? "Save changes"
-            : "Add item"}
+        <button type="submit" className="vp-primary-btn vp-focus" style={primaryButtonStyle}>
+          {initial ? "Save changes" : "Add item"}
         </button>
       </div>
     </form>
@@ -1808,50 +1694,51 @@ function ManageProductsPanel({
   onDelete: (productId: string) => Promise<void>;
 }) {
   const [query, setQuery] = useState("");
-  const [showForm, setShowForm] =
-    useState(false);
-  const [editingId, setEditingId] =
-    useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const filtered = products.filter((product) =>
-    product.name
-      .toLowerCase()
-      .includes(query.toLowerCase())
+    product.name.toLowerCase().includes(query.toLowerCase()),
   );
 
-  const editingItem =
-    products.find(
-      (product) => product.id === editingId
-    ) || null;
+  const editingItem = products.find((product) => product.id === editingId) || null;
 
-  async function addProduct(data: any) {
+  async function addProduct(data: ProductFormData) {
     try {
-      await onAdd({
+      const product = {
         ...data,
-        mrp: data.price,
+        price: Number(data.price),
+        stock: Number(data.stock),
+        mrp: Number(data.price),
         rating: 0,
         reviews: 0,
         emoji: "🎁",
         tags: [],
         status: "active",
-      });
+      } as Product;
+
+      await onAdd(product);
       setShowForm(false);
     } catch (error) {
       alert(error instanceof Error ? error.message : "Failed to add product");
     }
   }
 
-  async function updateProduct(data: any) {
+  async function updateProduct(data: ProductUpdateData) {
     const existing = products.find((product) => product.id === editingId);
+
     if (!existing) return;
 
     try {
       await onUpdate({
         ...existing,
         ...data,
-        mrp: data.mrp || data.price,
-      });
+        price: Number(data.price),
+        stock: Number(data.stock),
+        mrp: Number(data.mrp || data.price),
+      } as Product);
+
       setEditingId(null);
     } catch (error) {
       alert(error instanceof Error ? error.message : "Failed to update product");
@@ -1899,9 +1786,7 @@ function ManageProductsPanel({
           <input
             className="vp-input"
             value={query}
-            onChange={(event) =>
-              setQuery(event.target.value)
-            }
+            onChange={(event) => setQuery(event.target.value)}
             placeholder="Search your gift items…"
             style={{
               width: "100%",
@@ -1932,29 +1817,20 @@ function ManageProductsPanel({
         </button>
       </div>
 
-      {showForm && (
-        <ProductForm
-          onCancel={() =>
-            setShowForm(false)
-          }
-          onSave={addProduct}
-        />
-      )}
+      {showForm && <ProductForm onCancel={() => setShowForm(false)} onSave={addProduct} />}
 
       {editingItem && (
         <ProductForm
           initial={{
-            ...editingItem,
-            price: String(
-              editingItem.price
-            ),
-            stock: String(
-              editingItem.stock
-            ),
+            name: editingItem.name,
+            price: String(editingItem.price),
+            stock: String(editingItem.stock),
+            category: editingItem.category ?? "",
+            description: editingItem.description ?? "",
+            icon: editingItem.icon ?? "Gift",
+            image: editingItem.image ?? null,
           }}
-          onCancel={() =>
-            setEditingId(null)
-          }
+          onCancel={() => setEditingId(null)}
           onSave={updateProduct}
         />
       )}
@@ -1971,8 +1847,7 @@ function ManageProductsPanel({
           className="vendor-table-header"
           style={{
             display: "grid",
-            gridTemplateColumns:
-              "minmax(0,1fr) 90px 80px 110px 100px",
+            gridTemplateColumns: "minmax(0,1fr) 90px 80px 110px 100px",
             padding: "11px 14px",
             background: palette.surfaceTint,
             fontSize: 11,
@@ -1984,10 +1859,7 @@ function ManageProductsPanel({
           <span>Item</span>
           <span>Price</span>
           <span>Stock</span>
-
-          <span className="vendor-table-category">
-            Category
-          </span>
+          <span className="vendor-table-category">Category</span>
 
           <span
             className="vendor-table-actions-label"
@@ -2013,8 +1885,7 @@ function ManageProductsPanel({
         )}
 
         {filtered.map((product) => {
-          const Icon =
-            Gift;
+          const Icon = Gift;
 
           return (
             <div
@@ -2022,8 +1893,7 @@ function ManageProductsPanel({
               className="vendor-product-row vp-row"
               style={{
                 display: "grid",
-                gridTemplateColumns:
-                  "minmax(0,1fr) 90px 80px 110px 100px",
+                gridTemplateColumns: "minmax(0,1fr) 90px 80px 110px 100px",
                 alignItems: "center",
                 padding: "11px 14px",
                 borderTop: `1px solid ${palette.hairline}`,
@@ -2061,10 +1931,7 @@ function ManageProductsPanel({
                       }}
                     />
                   ) : (
-                    <Icon
-                      size={17}
-                      color={palette.rose}
-                    />
+                    <Icon size={17} color={palette.rose} />
                   )}
                 </div>
 
@@ -2093,10 +1960,7 @@ function ManageProductsPanel({
               <span
                 style={{
                   fontSize: 13.5,
-                  color:
-                    product.stock < 10
-                      ? palette.rose
-                      : palette.ink,
+                  color: product.stock < 10 ? palette.rose : palette.ink,
                 }}
               >
                 {product.stock}
@@ -2128,25 +1992,15 @@ function ManageProductsPanel({
                   }}
                   style={iconButtonStyle}
                 >
-                  <Pencil
-                    size={14}
-                    color={palette.inkSoft}
-                  />
+                  <Pencil size={14} color={palette.inkSoft} />
                 </button>
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setConfirmDeleteId(
-                      product.id
-                    )
-                  }
+                  onClick={() => setConfirmDeleteId(product.id)}
                   style={iconButtonStyle}
                 >
-                  <Trash2
-                    size={14}
-                    color={palette.roseDark}
-                  />
+                  <Trash2 size={14} color={palette.roseDark} />
                 </button>
               </div>
             </div>
@@ -2159,8 +2013,7 @@ function ManageProductsPanel({
           style={{
             position: "fixed",
             inset: 0,
-            background:
-              "rgba(43,26,34,0.35)",
+            background: "rgba(43,26,34,0.35)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -2175,8 +2028,7 @@ function ManageProductsPanel({
               padding: 22,
               maxWidth: 340,
               width: "100%",
-              boxShadow:
-                "0 20px 60px rgba(0,0,0,0.18)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.18)",
             }}
           >
             <div
@@ -2197,9 +2049,7 @@ function ManageProductsPanel({
                 lineHeight: 1.6,
               }}
             >
-              This action cannot be undone.
-              The product will no longer be
-              visible to buyers.
+              This action cannot be undone. The product will no longer be visible to buyers.
             </div>
 
             <div
@@ -2211,9 +2061,7 @@ function ManageProductsPanel({
             >
               <button
                 type="button"
-                onClick={() =>
-                  setConfirmDeleteId(null)
-                }
+                onClick={() => setConfirmDeleteId(null)}
                 style={secondaryButtonStyle}
               >
                 Cancel
@@ -2221,15 +2069,10 @@ function ManageProductsPanel({
 
               <button
                 type="button"
-                onClick={() =>
-                  deleteProduct(
-                    confirmDeleteId
-                  )
-                }
+                onClick={() => deleteProduct(confirmDeleteId)}
                 style={{
                   ...primaryButtonStyle,
-                  background:
-                    palette.roseDark,
+                  background: palette.roseDark,
                 }}
               >
                 Remove item
@@ -2244,34 +2087,34 @@ function ManageProductsPanel({
 
 function Vendor() {
   const { products: catalogProducts, addProduct, updateProduct, deleteProduct } = useProducts();
+
   const vendorId = (() => {
     try {
       const storedUser = localStorage.getItem("gifty_user");
-      const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+      const parsedUser: {
+        uid?: string;
+        id?: string;
+        vendor?: Partial<VendorProfile>;
+      } | null = storedUser ? JSON.parse(storedUser) : null;
+
       return parsedUser?.uid || parsedUser?.id || null;
     } catch {
       return null;
     }
   })();
 
-  const [tab, setTab] =
-    useState("overview");
-
-  const [following, setFollowing] =
-    useState(false);
+  const [tab, setTab] = useState("overview");
+  const [following, setFollowing] = useState(false);
 
   const products = useMemo(
     () => catalogProducts.filter((product) => !vendorId || product.vendorId === vendorId),
     [catalogProducts, vendorId],
   );
 
-  const [
-    conversations,
-    setConversations,
-  ] = useState(initialConversations);
+  const [conversations, setConversations] = useState<Conversation[]>(initialConversations);
 
   const [vendor, setVendor] = useState<VendorProfile>(() => {
-    const fallback = {
+    const fallback: VendorProfile = {
       name: "Wrapped & Co. Gifts",
       location: "Colombo, Sri Lanka",
       hours: "Mon–Sat, 9:00 AM – 8:00 PM",
@@ -2282,7 +2125,12 @@ function Vendor() {
 
     try {
       const storedUser = localStorage.getItem("gifty_user");
-      const storedVendor = storedUser ? JSON.parse(storedUser).vendor : null;
+
+      const parsedUser: {
+        vendor?: Partial<VendorProfile>;
+      } | null = storedUser ? JSON.parse(storedUser) : null;
+
+      const storedVendor = parsedUser?.vendor;
 
       return storedVendor ? { ...fallback, ...storedVendor } : fallback;
     } catch {
@@ -2290,14 +2138,9 @@ function Vendor() {
     }
   });
 
-  const [editingProfile, setEditingProfile] =
-    useState(false);
-
-  const [productSearch, setProductSearch] =
-    useState("");
-
-  const [selectedCategory, setSelectedCategory] =
-    useState("All");
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [productSearch, setProductSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const categories = useMemo(
     () => [
@@ -2305,41 +2148,23 @@ function Vendor() {
       ...Array.from(
         new Set(
           products
-            .map(
-              (product) =>
-                product.category
-            )
-            .filter(Boolean)
-        )
+            .map((product) => product.category)
+            .filter((category): category is string => Boolean(category)),
+        ),
       ),
     ],
-    [products]
+    [products],
   );
 
   const storefrontProducts = useMemo(() => {
     return products.filter((product) => {
-      const matchesSearch =
-        product.name
-          .toLowerCase()
-          .includes(
-            productSearch.toLowerCase()
-          );
+      const matchesSearch = product.name.toLowerCase().includes(productSearch.toLowerCase());
 
-      const matchesCategory =
-        selectedCategory === "All" ||
-        product.category ===
-          selectedCategory;
+      const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
 
-      return (
-        matchesSearch &&
-        matchesCategory
-      );
+      return matchesSearch && matchesCategory;
     });
-  }, [
-    products,
-    productSearch,
-    selectedCategory,
-  ]);
+  }, [products, productSearch, selectedCategory]);
 
   const tabs = [
     {
@@ -2365,21 +2190,38 @@ function Vendor() {
   ];
 
   function handleShare() {
-    if (
-      navigator.share &&
-      typeof window !== "undefined"
-    ) {
+    if (navigator.share && typeof window !== "undefined") {
       navigator.share({
         title: vendor.name,
         text: `Visit ${vendor.name}`,
         url: window.location.href,
       });
     } else {
-      navigator.clipboard?.writeText(
-        window.location.href
-      );
+      navigator.clipboard?.writeText(window.location.href);
       alert("Store link copied to clipboard.");
     }
+  }
+
+  function saveVendorProfile() {
+    try {
+      const storedUser = localStorage.getItem("gifty_user");
+
+      if (storedUser) {
+        const parsedUser: Record<string, unknown> = JSON.parse(storedUser);
+
+        localStorage.setItem(
+          "gifty_user",
+          JSON.stringify({
+            ...parsedUser,
+            vendor,
+          }),
+        );
+      }
+    } catch {
+      // Keep the UI state even if localStorage is unavailable.
+    }
+
+    setEditingProfile(false);
   }
 
   return (
@@ -2399,8 +2241,6 @@ function Vendor() {
           margin: "0 auto",
         }}
       >
-        {/* Breadcrumb */}
-
         <div
           className="vp-hero-anim"
           style={{
@@ -2431,8 +2271,6 @@ function Vendor() {
 
         <StoreBanner />
 
-        {/* Store Header */}
-
         <div
           className="vp-hero-anim"
           style={{
@@ -2440,8 +2278,7 @@ function Vendor() {
             flexWrap: "wrap",
             gap: 18,
             alignItems: "flex-end",
-            justifyContent:
-              "space-between",
+            justifyContent: "space-between",
             marginTop: -38,
             padding: "0 6px",
             position: "relative",
@@ -2464,15 +2301,10 @@ function Vendor() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow:
-                  "0 6px 20px rgba(194,24,91,0.16)",
+                boxShadow: "0 6px 20px rgba(194,24,91,0.16)",
               }}
             >
-              <Gift
-                size={34}
-                color={palette.rose}
-                strokeWidth={1.6}
-              />
+              <Gift size={34} color={palette.rose} strokeWidth={1.6} />
             </div>
 
             <div
@@ -2499,11 +2331,7 @@ function Vendor() {
                   {vendor.name}
                 </h1>
 
-                <BadgeCheck
-                  size={20}
-                  color={palette.rose}
-                  fill={palette.roseSoft}
-                />
+                <BadgeCheck size={20} color={palette.rose} fill={palette.roseSoft} />
               </div>
 
               <div
@@ -2523,11 +2351,7 @@ function Vendor() {
                     fontSize: 13.5,
                   }}
                 >
-                  <Star
-                    size={14}
-                    fill={palette.rose}
-                    color={palette.rose}
-                  />
+                  <Star size={14} fill={palette.rose} color={palette.rose} />
 
                   <strong>4.8</strong>
 
@@ -2547,8 +2371,7 @@ function Vendor() {
                     gap: 4,
                     fontSize: 11.5,
                     color: palette.success,
-                    background:
-                      palette.successSoft,
+                    background: palette.successSoft,
                     padding: "4px 9px",
                     borderRadius: 999,
                     fontWeight: 700,
@@ -2575,48 +2398,28 @@ function Vendor() {
               aria-label="Share store"
               style={iconButtonStyle}
             >
-              <Share2
-                size={17}
-                color={palette.inkSoft}
-              />
+              <Share2 size={17} color={palette.inkSoft} />
             </button>
 
             <button
               type="button"
-              onClick={() =>
-                setFollowing(
-                  (previous) =>
-                    !previous
-                )
-              }
+              onClick={() => setFollowing((previous) => !previous)}
               aria-label="Follow store"
               style={{
                 ...iconButtonStyle,
-                background: following
-                  ? palette.roseSoft
-                  : "#fff",
+                background: following ? palette.roseSoft : "#fff",
               }}
             >
               <Heart
                 size={17}
-                color={
-                  following
-                    ? palette.roseDark
-                    : palette.inkSoft
-                }
-                fill={
-                  following
-                    ? palette.roseDark
-                    : "none"
-                }
+                color={following ? palette.roseDark : palette.inkSoft}
+                fill={following ? palette.roseDark : "none"}
               />
             </button>
 
             <button
               type="button"
-              onClick={() =>
-                setTab("products")
-              }
+              onClick={() => setTab("products")}
               className="vp-primary-btn vp-focus"
               style={primaryButtonStyle}
             >
@@ -2624,8 +2427,6 @@ function Vendor() {
             </button>
           </div>
         </div>
-
-        {/* Store Statistics */}
 
         <div
           className="vp-hero-anim"
@@ -2640,40 +2441,16 @@ function Vendor() {
             marginTop: 20,
           }}
         >
-          <StatChip
-            icon={Package}
-            label="products"
-            value={String(
-              products.length
-            )}
-          />
+          <StatChip icon={Package} label="products" value={String(products.length)} />
 
-          <StatChip
-            icon={Users}
-            label="followers"
-            value="12.4K"
-          />
+          <StatChip icon={Users} label="followers" value="12.4K" />
 
-          <StatChip
-            icon={ShoppingBag}
-            label="orders shipped"
-            value="28.6K"
-          />
+          <StatChip icon={ShoppingBag} label="orders shipped" value="28.6K" />
 
-          <StatChip
-            icon={Clock}
-            label="response rate"
-            value="98%"
-          />
+          <StatChip icon={Clock} label="response rate" value="98%" />
 
-          <StatChip
-            icon={Truck}
-            label="on-time delivery"
-            value="96%"
-          />
+          <StatChip icon={Truck} label="on-time delivery" value="96%" />
         </div>
-
-        {/* Navigation */}
 
         <div
           style={{
@@ -2689,12 +2466,8 @@ function Vendor() {
             <button
               key={item.id}
               type="button"
-              onClick={() =>
-                setTab(item.id)
-              }
-              data-active={
-                tab === item.id
-              }
+              onClick={() => setTab(item.id)}
+              data-active={tab === item.id}
               className="vp-tab-btn vp-focus"
               style={{
                 background: "none",
@@ -2702,10 +2475,7 @@ function Vendor() {
                 padding: "0 0 13px",
                 fontSize: 14,
                 fontWeight: 700,
-                color:
-                  tab === item.id
-                    ? palette.ink
-                    : palette.inkSoft,
+                color: tab === item.id ? palette.ink : palette.inkSoft,
                 cursor: "pointer",
               }}
             >
@@ -2714,15 +2484,12 @@ function Vendor() {
           ))}
         </div>
 
-        {/* OVERVIEW */}
-
         {tab === "overview" && (
           <div
             className="vendor-overview-grid"
             style={{
               display: "grid",
-              gridTemplateColumns:
-                "minmax(0,1fr) 310px",
+              gridTemplateColumns: "minmax(0,1fr) 310px",
               gap: 26,
             }}
           >
@@ -2744,10 +2511,7 @@ function Vendor() {
                     marginBottom: 12,
                   }}
                 >
-                  <Store
-                    size={18}
-                    color={palette.rose}
-                  />
+                  <Store size={18} color={palette.rose} />
 
                   <h2
                     className="vendor-display"
@@ -2768,22 +2532,16 @@ function Vendor() {
                     marginBottom: 0,
                   }}
                 >
-                  We make small, thoughtful
-                  things for the moments people
-                  want to mark. From candles
-                  poured in Colombo to
-                  personalised keepsake boxes,
-                  every parcel leaves our
-                  workshop carefully wrapped
-                  by hand.
+                  We make small, thoughtful things for the moments people want to mark. From candles
+                  poured in Colombo to personalised keepsake boxes, every parcel leaves our workshop
+                  carefully wrapped by hand.
                 </p>
               </div>
 
               <div
                 style={{
                   display: "flex",
-                  justifyContent:
-                    "space-between",
+                  justifyContent: "space-between",
                   alignItems: "center",
                   marginBottom: 14,
                 }}
@@ -2806,16 +2564,13 @@ function Vendor() {
                       marginTop: 4,
                     }}
                   >
-                    Popular products from this
-                    store
+                    Popular products from this store
                   </div>
                 </div>
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setTab("products")
-                  }
+                  onClick={() => setTab("products")}
                   style={{
                     border: "none",
                     background: "none",
@@ -2833,19 +2588,13 @@ function Vendor() {
                 className="vendor-products-grid"
                 style={{
                   display: "grid",
-                  gridTemplateColumns:
-                    "repeat(3, minmax(0,1fr))",
+                  gridTemplateColumns: "repeat(3, minmax(0,1fr))",
                   gap: 14,
                 }}
               >
-                {products
-                  .slice(0, 6)
-                  .map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                    />
-                  ))}
+                {products.slice(0, 6).map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
               </div>
             </div>
 
@@ -2857,25 +2606,14 @@ function Vendor() {
               }}
             >
               <MessagesSummaryCard
-                conversations={
-                  conversations
-                }
-                onOpen={() =>
-                  setTab("messages")
-                }
+                conversations={conversations}
+                onOpen={() => setTab("messages")}
               />
 
-              <BusinessInfoCard
-                vendor={vendor}
-                onEdit={() =>
-                  setEditingProfile(true)
-                }
-              />
+              <BusinessInfoCard vendor={vendor} onEdit={() => setEditingProfile(true)} />
             </div>
           </div>
         )}
-
-        {/* STOREFRONT */}
 
         {tab === "products" && (
           <div>
@@ -2901,26 +2639,20 @@ function Vendor() {
                     position: "absolute",
                     left: 12,
                     top: "50%",
-                    transform:
-                      "translateY(-50%)",
+                    transform: "translateY(-50%)",
                   }}
                 />
 
                 <input
                   className="vp-input"
                   value={productSearch}
-                  onChange={(event) =>
-                    setProductSearch(
-                      event.target.value
-                    )
-                  }
+                  onChange={(event) => setProductSearch(event.target.value)}
                   placeholder="Search products in this store..."
                   style={{
                     width: "100%",
                     border: `1px solid ${palette.hairline}`,
                     borderRadius: 10,
-                    padding:
-                      "11px 12px 11px 38px",
+                    padding: "11px 12px 11px 38px",
                     fontSize: 13.5,
                     background: "#fff",
                   }}
@@ -2935,54 +2667,34 @@ function Vendor() {
                   flexWrap: "wrap",
                 }}
               >
-                <Filter
-                  size={16}
-                  color={palette.inkSoft}
-                />
+                <Filter size={16} color={palette.inkSoft} />
 
-                {categories.map(
-                  (category) => (
-                    <button
-                      key={category}
-                      type="button"
-                      onClick={() =>
-                        setSelectedCategory(
-                          category
-                        )
-                      }
-                      style={{
-                        border:
-                          selectedCategory ===
-                          category
-                            ? `1px solid ${palette.rose}`
-                            : `1px solid ${palette.hairline}`,
-                        background:
-                          selectedCategory ===
-                          category
-                            ? palette.roseSoft
-                            : "#fff",
-                        color:
-                          selectedCategory ===
-                          category
-                            ? palette.roseDark
-                            : palette.inkSoft,
-                        padding:
-                          "8px 12px",
-                        borderRadius: 999,
-                        fontSize: 12,
-                        fontWeight: 600,
-                        cursor: "pointer",
-                      }}
-                    >
-                      {category}
-                    </button>
-                  )
-                )}
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => setSelectedCategory(category)}
+                    style={{
+                      border:
+                        selectedCategory === category
+                          ? `1px solid ${palette.rose}`
+                          : `1px solid ${palette.hairline}`,
+                      background: selectedCategory === category ? palette.roseSoft : "#fff",
+                      color: selectedCategory === category ? palette.roseDark : palette.inkSoft,
+                      padding: "8px 12px",
+                      borderRadius: 999,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {category}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {storefrontProducts.length ===
-            0 ? (
+            {storefrontProducts.length === 0 ? (
               <div
                 style={{
                   padding: 40,
@@ -3000,30 +2712,21 @@ function Vendor() {
                 className="vendor-products-grid"
                 style={{
                   display: "grid",
-                  gridTemplateColumns:
-                    "repeat(4, minmax(0,1fr))",
+                  gridTemplateColumns: "repeat(4, minmax(0,1fr))",
                   gap: 16,
                 }}
               >
-                {storefrontProducts.map(
-                  (product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onAddToCart={() =>
-                        alert(
-                          `${product.name} added to cart`
-                        )
-                      }
-                    />
-                  )
-                )}
+                {storefrontProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onAddToCart={() => alert(`${product.name} added to cart`)}
+                  />
+                ))}
               </div>
             )}
           </div>
         )}
-
-        {/* MANAGE PRODUCTS */}
 
         {tab === "manage" && (
           <ManageProductsPanel
@@ -3034,25 +2737,15 @@ function Vendor() {
           />
         )}
 
-        {/* MESSAGES */}
-
         {tab === "messages" && (
-          <MessagesPanel
-            conversations={conversations}
-            setConversations={
-              setConversations
-            }
-          />
+          <MessagesPanel conversations={conversations} setConversations={setConversations} />
         )}
-
-        {/* POLICIES */}
 
         {tab === "policies" && (
           <div
             style={{
               display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fit, minmax(250px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
               gap: 16,
             }}
           >
@@ -3060,26 +2753,22 @@ function Vendor() {
               {
                 icon: Package,
                 title: "Dispatch time",
-                body:
-                  "Orders are carefully wrapped and handed to our courier within 1–2 business days.",
+                body: "Orders are carefully wrapped and handed to our courier within 1–2 business days.",
               },
               {
                 icon: Truck,
                 title: "Shipping",
-                body:
-                  "Tracked local delivery takes approximately 3–5 days. International shipping times depend on the destination.",
+                body: "Tracked local delivery takes approximately 3–5 days. International shipping times depend on the destination.",
               },
               {
                 icon: ShieldCheck,
                 title: "Returns",
-                body:
-                  "Unused eligible items can be returned within 14 days. Personalised products are made to order and are final sale.",
+                body: "Unused eligible items can be returned within 14 days. Personalised products are made to order and are final sale.",
               },
               {
                 icon: MessageCircle,
                 title: "Customer support",
-                body:
-                  "Contact our store directly through the in-app messaging system for fast assistance.",
+                body: "Contact our store directly through the in-app messaging system for fast assistance.",
               },
             ].map((policy) => {
               const Icon = policy.icon;
@@ -3100,19 +2789,14 @@ function Vendor() {
                       width: 42,
                       height: 42,
                       borderRadius: 11,
-                      background:
-                        palette.roseSoft,
+                      background: palette.roseSoft,
                       display: "flex",
                       alignItems: "center",
-                      justifyContent:
-                        "center",
+                      justifyContent: "center",
                       marginBottom: 16,
                     }}
                   >
-                    <Icon
-                      size={20}
-                      color={palette.roseDark}
-                    />
+                    <Icon size={20} color={palette.roseDark} />
                   </div>
 
                   <div
@@ -3141,16 +2825,13 @@ function Vendor() {
         )}
       </div>
 
-      {/* EDIT BUSINESS PROFILE MODAL */}
-
       {editingProfile && (
         <div
           style={{
             position: "fixed",
             inset: 0,
             zIndex: 100,
-            background:
-              "rgba(43,26,34,0.35)",
+            background: "rgba(43,26,34,0.35)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -3171,8 +2852,7 @@ function Vendor() {
             <div
               style={{
                 display: "flex",
-                justifyContent:
-                  "space-between",
+                justifyContent: "space-between",
                 alignItems: "center",
                 marginBottom: 18,
               }}
@@ -3194,16 +2874,13 @@ function Vendor() {
                     marginTop: 3,
                   }}
                 >
-                  Manage your public vendor
-                  information
+                  Manage your public vendor information
                 </div>
               </div>
 
               <button
                 type="button"
-                onClick={() =>
-                  setEditingProfile(false)
-                }
+                onClick={() => setEditingProfile(false)}
                 style={{
                   border: "none",
                   background: "none",
@@ -3214,74 +2891,55 @@ function Vendor() {
               </button>
             </div>
 
-            {[
-              ["name", "Business name"],
-              ["location", "Location"],
-              ["hours", "Business hours"],
-              ["phone", "Phone number"],
-              ["email", "Email address"],
-              ["website", "Website"],
-            ].map(
-              ([field, label]) => (
-                <div
-                  key={field}
-                  style={{
-                    marginBottom: 13,
-                  }}
-                >
-                  <label style={labelStyle}>
-                    {label}
-                  </label>
+            {(
+              [
+                ["name", "Business name"],
+                ["location", "Location"],
+                ["hours", "Business hours"],
+                ["phone", "Phone number"],
+                ["email", "Email address"],
+                ["website", "Website"],
+              ] as Array<[keyof VendorProfile, string]>
+            ).map(([field, label]) => (
+              <div
+                key={field}
+                style={{
+                  marginBottom: 13,
+                }}
+              >
+                <label style={labelStyle}>{label}</label>
 
-                  <input
-                    className="vp-input"
-                    value={
-                      vendor[
-                        field as keyof typeof vendor
-                      ]
-                    }
-                    onChange={(event) =>
-                      setVendor(
-                        (previous) => ({
-                          ...previous,
-                          [field]:
-                            event.target
-                              .value,
-                        })
-                      )
-                    }
-                    style={inputStyle}
-                  />
-                </div>
-              )
-            )}
+                <input
+                  className="vp-input"
+                  value={vendor[field]}
+                  onChange={(event) =>
+                    setVendor((previous) => ({
+                      ...previous,
+                      [field]: event.target.value,
+                    }))
+                  }
+                  style={inputStyle}
+                />
+              </div>
+            ))}
 
             <div
               style={{
                 display: "flex",
-                justifyContent:
-                  "flex-end",
+                justifyContent: "flex-end",
                 gap: 10,
                 marginTop: 20,
               }}
             >
               <button
                 type="button"
-                onClick={() =>
-                  setEditingProfile(false)
-                }
+                onClick={() => setEditingProfile(false)}
                 style={secondaryButtonStyle}
               >
                 Cancel
               </button>
 
-              <button
-                type="button"
-                onClick={() =>
-                  setEditingProfile(false)
-                }
-                style={primaryButtonStyle}
-              >
+              <button type="button" onClick={saveVendorProfile} style={primaryButtonStyle}>
                 Save profile
               </button>
             </div>
@@ -3291,10 +2949,6 @@ function Vendor() {
     </div>
   );
 }
-
-/* ------------------------------
-   Shared styles
--------------------------------- */
 
 const labelStyle: React.CSSProperties = {
   fontSize: 12,
@@ -3349,4 +3003,3 @@ const iconButtonStyle: React.CSSProperties = {
 export const Route = createFileRoute("/vendor")({
   component: Vendor,
 });
-
