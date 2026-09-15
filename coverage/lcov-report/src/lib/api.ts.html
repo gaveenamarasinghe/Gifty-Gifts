@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
@@ -102,72 +102,72 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { isFirebaseConfigured } from "./firebase";
 &nbsp;
-<span class="cstat-no" title="statement not covered" >const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";</span>
+const API_URL = <span class="cstat-no" title="statement not covered" >import.meta.env.VITE_API_URL || "http://localhost:5000";</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export function getToken(): string | null {</span>
+export function <span class="fstat-no" title="function not covered" >getToken(): string | null {</span>
 <span class="cstat-no" title="statement not covered" >  return localStorage.getItem("gifty_token");</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+}
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export async function fetchJson(path: string, options: RequestInit = {}) {</span>
-<span class="cstat-no" title="statement not covered" >  const headers: Record&lt;string, string&gt; = {</span>
-<span class="cstat-no" title="statement not covered" >    "Content-Type": "application/json",</span>
-<span class="cstat-no" title="statement not covered" >    ...(options.headers || {}),</span>
-<span class="cstat-no" title="statement not covered" >  };</span>
+export async function <span class="fstat-no" title="function not covered" >fetchJson(p</span>ath: string, options: RequestInit = <span class="branch-0 cbranch-no" title="branch not covered" >{}) {</span>
+  const headers: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{</span>
+    "Content-Type": "application/json",
+    ...(options.headers || {}),
+  };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  const token = getToken();</span>
+  const token = <span class="cstat-no" title="statement not covered" >getToken();</span>
 <span class="cstat-no" title="statement not covered" >  if (token) {</span>
 <span class="cstat-no" title="statement not covered" >    headers.Authorization = `Bearer ${token}`;</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+  }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  const response = await fetch(`${API_URL}${path}`, {</span>
-<span class="cstat-no" title="statement not covered" >    ...options,</span>
-<span class="cstat-no" title="statement not covered" >    headers,</span>
-<span class="cstat-no" title="statement not covered" >  });</span>
+  const response = <span class="cstat-no" title="statement not covered" >await fetch(`${API_URL}${path}`, {</span>
+    ...options,
+    headers,
+  });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  const contentType = response.headers.get("content-type") || "";</span>
-<span class="cstat-no" title="statement not covered" >  const body = contentType.includes("application/json") ? await response.json() : null;</span>
+  const contentType = <span class="cstat-no" title="statement not covered" >response.headers.get("content-type") || "";</span>
+  const body = <span class="cstat-no" title="statement not covered" >contentType.includes("application/json") ? await response.json() : null;</span>
 <span class="cstat-no" title="statement not covered" >  return { response, data: body };</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+}
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export function makeSlug(value: string) {</span>
+export function <span class="fstat-no" title="function not covered" >makeSlug(v</span>alue: string) {
 <span class="cstat-no" title="statement not covered" >  return value</span>
-<span class="cstat-no" title="statement not covered" >    .toLowerCase()</span>
-<span class="cstat-no" title="statement not covered" >    .replace(/[^a-z0-9]+/g, "-")</span>
-<span class="cstat-no" title="statement not covered" >    .replace(/(^-|-$)/g, "");</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -175,7 +175,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-09-11T10:08:25.514Z
+                at 2026-09-15T11:21:34.447Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

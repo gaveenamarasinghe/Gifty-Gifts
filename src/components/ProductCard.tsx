@@ -66,9 +66,7 @@ export function ProductCard({ product, vendorName }: { product: Product; vendorN
             Sold by {vendorName || product.vendorName}
           </p>
         )}
-        <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-          {product.description}
-        </p>
+        <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{product.description}</p>
         <div className="mt-2 flex items-baseline gap-2">
           <span className="text-lg font-bold text-primary">{currency(product.price)}</span>
           <span className="text-sm text-muted-foreground line-through">

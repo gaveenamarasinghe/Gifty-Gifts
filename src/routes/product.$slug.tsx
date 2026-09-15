@@ -103,11 +103,7 @@ function ProductDetail() {
         <div className="grid gap-12 lg:grid-cols-2">
           <div className="group relative aspect-square overflow-hidden rounded-[2.5rem] gradient-soft shadow-card">
             {product.image ? (
-              <img
-                src={product.image}
-                alt={product.name}
-                className="h-full w-full object-cover"
-              />
+              <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
             ) : (
               <span
                 aria-hidden

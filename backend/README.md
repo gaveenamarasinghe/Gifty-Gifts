@@ -28,33 +28,33 @@ mirrored into Firebase custom claims; `authorize(...)` gates each route.
 
 ## Endpoints
 
-| Method | Path | Access |
-| --- | --- | --- |
-| POST | `/api/auth/register` | public |
-| POST | `/api/auth/login` | public (ID token) |
-| POST | `/api/auth/forgot-password` | public |
-| GET | `/api/auth/me` | auth |
-| PATCH | `/api/auth/role/:uid` | admin |
-| GET | `/api/products` | public (search, filter, sort, paginate) |
-| GET | `/api/products/:slug` | public |
-| POST/PUT/DELETE | `/api/products` | vendor, admin |
-| GET | `/api/categories` | public |
-| POST | `/api/orders` | auth |
-| GET | `/api/orders/mine` | auth |
-| GET | `/api/orders/:id` | owner, vendor, admin |
-| GET | `/api/orders/track/:id` | public |
-| PATCH | `/api/orders/:id/status` | vendor, admin |
-| POST | `/api/orders/:id/cancel` | owner |
-| POST | `/api/payments/create-session` | auth (Stripe Checkout) |
-| POST | `/api/payments/webhook` | Stripe (signature verified) |
-| GET | `/api/payments/mine` | auth |
-| GET/POST/DELETE | `/api/reviews` | public read, verified buyers write |
-| POST | `/api/coupons/validate` | public |
-| GET/PUT | `/api/wishlists/mine` | auth |
-| PUT | `/api/users/me` | auth |
-| GET/POST/DELETE | `/api/users/me/addresses` | auth |
-| POST | `/api/contacts` | public |
-| POST | `/api/upload` | auth (Cloudinary) |
+| Method          | Path                           | Access                                  |
+| --------------- | ------------------------------ | --------------------------------------- |
+| POST            | `/api/auth/register`           | public                                  |
+| POST            | `/api/auth/login`              | public (ID token)                       |
+| POST            | `/api/auth/forgot-password`    | public                                  |
+| GET             | `/api/auth/me`                 | auth                                    |
+| PATCH           | `/api/auth/role/:uid`          | admin                                   |
+| GET             | `/api/products`                | public (search, filter, sort, paginate) |
+| GET             | `/api/products/:slug`          | public                                  |
+| POST/PUT/DELETE | `/api/products`                | vendor, admin                           |
+| GET             | `/api/categories`              | public                                  |
+| POST            | `/api/orders`                  | auth                                    |
+| GET             | `/api/orders/mine`             | auth                                    |
+| GET             | `/api/orders/:id`              | owner, vendor, admin                    |
+| GET             | `/api/orders/track/:id`        | public                                  |
+| PATCH           | `/api/orders/:id/status`       | vendor, admin                           |
+| POST            | `/api/orders/:id/cancel`       | owner                                   |
+| POST            | `/api/payments/create-session` | auth (Stripe Checkout)                  |
+| POST            | `/api/payments/webhook`        | Stripe (signature verified)             |
+| GET             | `/api/payments/mine`           | auth                                    |
+| GET/POST/DELETE | `/api/reviews`                 | public read, verified buyers write      |
+| POST            | `/api/coupons/validate`        | public                                  |
+| GET/PUT         | `/api/wishlists/mine`          | auth                                    |
+| PUT             | `/api/users/me`                | auth                                    |
+| GET/POST/DELETE | `/api/users/me/addresses`      | auth                                    |
+| POST            | `/api/contacts`                | public                                  |
+| POST            | `/api/upload`                  | auth (Cloudinary)                       |
 
 ## Security
 

@@ -1,6 +1,6 @@
 # 🎁 Gifty (Gifty)
 
-**Gifty** is a React-based multivendor gift marketplace built for Sri Lanka  an "AliExpress-style" platform where multiple vendors can list and sell gift items (flowers, cakes, teddy bears, love cards, hampers, chocolates, jewellery, candles, and more) to customers across the country.
+**Gifty** is a React-based multivendor gift marketplace built for Sri Lanka an "AliExpress-style" platform where multiple vendors can list and sell gift items (flowers, cakes, teddy bears, love cards, hampers, chocolates, jewellery, candles, and more) to customers across the country.
 
 ---
 
@@ -24,13 +24,13 @@ Gifty connects local gift vendors with customers through a single, unified onlin
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| **Frontend** | React, Tailwind CSS, Custom CSS |
-| **Backend** | Node.js, Express.js |
+| Layer                                  | Technology                         |
+| -------------------------------------- | ---------------------------------- |
+| **Frontend**                           | React, Tailwind CSS, Custom CSS    |
+| **Backend**                            | Node.js, Express.js                |
 | **Database (Frontend Auth/User Data)** | Firebase Authentication, Firestore |
-| **Database (Backend API)** | MongoDB, Mongoose |
-| **Language** | JavaScript / TypeScript |
+| **Database (Backend API)**             | MongoDB, Mongoose                  |
+| **Language**                           | JavaScript / TypeScript            |
 
 ---
 
@@ -68,18 +68,21 @@ gifty/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/gaveenamarasinghe/gifty.git
    cd gifty
    ```
 
 2. **Install frontend dependencies**
+
    ```bash
    cd client
    npm install
    ```
 
 3. **Install backend dependencies**
+
    ```bash
    cd ../server
    npm install
@@ -88,6 +91,7 @@ gifty/
 4. **Configure environment variables**
 
    Create a `.env` file in `client/` with your Firebase config:
+
    ```env
    REACT_APP_FIREBASE_API_KEY=your_api_key
    REACT_APP_FIREBASE_AUTH_DOMAIN=your_auth_domain
@@ -98,6 +102,7 @@ gifty/
    ```
 
    Create a `.env` file in `server/` with your MongoDB connection string:
+
    ```env
    MONGO_URI=your_mongodb_connection_string
    PORT=5000
@@ -106,12 +111,14 @@ gifty/
 5. **Run the development servers**
 
    Frontend:
+
    ```bash
    cd client
    npm start
    ```
 
    Backend:
+
    ```bash
    cd server
    npm run dev
@@ -151,7 +158,6 @@ This project is licensed under the MIT License — see the `LICENSE` file for de
 ## 👤 Author
 
 **BlackNetIT**
-
 
 ---
 
